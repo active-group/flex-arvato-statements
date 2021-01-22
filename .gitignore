@@ -25,4 +25,5 @@ rebar3.crashdump
 flex-ag.zip
 erlbank/nginx/sites-enabled/default.conf
 flex-ag
+rebar.lock
 
