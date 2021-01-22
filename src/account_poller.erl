@@ -21,10 +21,22 @@ poll_process() ->
 
 poll_accounts() ->
     AccountPid = global:whereis_name(account_service),
-    AccountCreatedList = AccountPid ! #get{fromAccountId = 0},
-    parseAndSaveAccounts(AccountCreatedList).
+    if
+        AccountPid == undefined ->
+            lager:info("No Account Service found :(");
+        true ->
+            AccountCreatedList = gen_server:call(AccountPid, #get{ fromAccountId = database:get_latest_account_number()+1 }),
+            parseAndSaveAccounts(AccountCreatedList)
+    end.
 
 parseAndSaveAccounts([]) -> ok;
 parseAndSaveAccounts([AccountCreated | Rest]) ->
+    % LastTx = lists:last(database:get_all_transactions(AccountCreated#accountCreated.account_number)),
+    % if
+    %     LastTx == undefined -> Amount = AccountCreated#accountCreated.amount;
+    %     true -> 
+    %         if
+    %             LastTx#transaction.from_acc_nr == AccountCreated#accountCreated.account_number -> Amount = LastTx#transaction.from
+    % end.
     database:put_account(#account{account_number = AccountCreated#accountCreated.account_number, firstname=AccountCreated#accountCreated.firstname, surname = AccountCreated#accountCreated.surname, amount=AccountCreated#accountCreated.amount}),
     parseAndSaveAccounts(Rest).

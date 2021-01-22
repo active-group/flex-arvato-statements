@@ -6,7 +6,7 @@
          put_account/1, get_account/1, get_all_accounts/0,         
          put_transaction/1, get_transaction/1, get_all_transactions/0, get_all_transactions/1, 
          unique_account_number/0,unique_tx_id/0,
-         atomically/1]).
+         atomically/1, get_latest_account_number/0]).
 
 %% id-table for atomic id increment
 -record(table_id, {table_name :: mnesia:table(), last_id :: non_neg_integer()}).
@@ -69,6 +69,11 @@ get_account(AccountNumber) ->
 
 -spec get_all_accounts() -> list(#account{}).
 get_all_accounts() -> read_all(account, fun deserialize_account/1).
+
+-spec get_latest_account_number() -> number().
+get_latest_account_number() ->
+     LastAccount = lists:last(get_all_accounts()),
+     LastAccount#account.account_number.
 
 -spec put_transaction(#transaction{}) -> ok.
 put_transaction(#transaction{id = Id, timestamp = Timestamp, from_acc_nr = FromAccNr, to_acc_nr = ToAccNr, amount = Amount}) ->

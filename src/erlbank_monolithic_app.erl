@@ -15,8 +15,6 @@
 start_cowboy() ->
     %% Cowboy test code
     Dispatch = cowboy_router:compile([{'_', [{"/", web_frontend, index},
-                                            %  {"/accounts/open", web_frontend, open_account},
-                                            %  {"/transactions/create", web_frontend, create_transaction},
                                              {"/bank-statements/request", web_frontend, request}]}]),
 
     {ok, _} = cowboy:start_clear(my_http_listener,
@@ -26,6 +24,7 @@ start_cowboy() ->
 
 start(_StartType, _StartArgs) ->
     database:init_database(),
+    lager:start(),
     start_cowboy(),
     account_poller:poll_process(),
     statements_server:start(ok),
