@@ -25,7 +25,9 @@ poll_accounts() ->
         AccountPid == undefined ->
             lager:info("No Account Service found :(");
         true ->
+            lager:info("Calling account service at ~p", [AccountPid]),
             AccountCreatedList = gen_server:call(AccountPid, #get{ fromAccountId = database:get_latest_account_number()+1 }),
+            lager:info("Got account list from account service ~p", [AccountCreatedList]),
             parseAndSaveAccounts(AccountCreatedList)
     end.
 
