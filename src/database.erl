@@ -14,13 +14,21 @@
 %% destroy tables in case they already existed
 destroy_tables() ->
     mnesia:delete_table(transaction),
+    mnesia:del_table_copy(transaction, node()),
     mnesia:delete_table(account),
-    mnesia:delete_table(table_id).
+    mnesia:del_table_copy(account, node()),
+    mnesia:delete_table(table_id),
+    mnesia:del_table_copy(table_id, node()).
 
 create_tables() ->
     mnesia:create_table(transaction, [{attributes, [id, timestamp, from_acc_nr, to_acc_nr, amount]}]),
     mnesia:create_table(account, [{attributes, [account_number, firstname, surname, amount]}]),
     mnesia:create_table(table_id, [{record_name, table_id}, {attributes, record_info(fields, table_id)}]).
+
+clear_tables() ->
+    mnesia:clear_table(account),
+    mnesia:clear_table(account),
+    mnesia:clear_table(table_id).
 
 init_database() ->
     mnesia:create_schema([node()]),
@@ -28,6 +36,7 @@ init_database() ->
     destroy_tables(),
     create_tables(),
     ok = mnesia:wait_for_tables([transaction, account, table_id], 5000),
+    mnesia:transaction(fun clear_tables/0),
     put_account(#account{account_number = 1, firstname = <<"Max">>, surname = <<"Meier">>, amount = 1000}),
     put_account(#account{account_number = 2, firstname = <<"Martin">>, surname = <<"Müller">>, amount = 1000}),
     put_transaction(#transaction{id = 1, timestamp = {1610,547469,326863}, from_acc_nr = 1, to_acc_nr = 2, amount = 100 }),
