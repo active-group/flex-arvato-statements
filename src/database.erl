@@ -81,8 +81,11 @@ get_all_accounts() -> read_all(account, fun deserialize_account/1).
 
 -spec get_latest_account_number() -> number().
 get_latest_account_number() ->
-     LastAccount = lists:max(get_all_accounts()),
-     LastAccount#account.account_number.
+    case get_all_accounts() of
+        [] -> 0; % guess
+        Accounts -> LastAccount = lists:max(Accounts),
+                    LastAccount#account.account_number
+    end.
 
 -spec put_transaction(#transaction{}) -> ok.
 put_transaction(#transaction{id = Id, timestamp = Timestamp, from_acc_nr = FromAccNr, to_acc_nr = ToAccNr, amount = Amount}) ->
