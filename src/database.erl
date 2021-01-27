@@ -37,11 +37,11 @@ init_database() ->
     create_tables(),
     ok = mnesia:wait_for_tables([transaction, account, table_id], 5000),
     mnesia:transaction(fun clear_tables/0),
-    put_account(#account{account_number = 1, firstname = <<"Max">>, surname = <<"Meier">>, amount = 1000}),
-    put_account(#account{account_number = 2, firstname = <<"Martin">>, surname = <<"Müller">>, amount = 1000}),
-    put_transaction(#transaction{id = 1, timestamp = {1610,547469,326863}, from_acc_nr = 1, to_acc_nr = 2, amount = 100 }),
-    put_transaction(#transaction{id = 2, timestamp = {1610,547469,326863}, from_acc_nr = 2, to_acc_nr = 1, amount = 20 }),
-    put_transaction(#transaction{id = 3, timestamp = {1610,547469,326863}, from_acc_nr = 1, to_acc_nr = 2, amount = 450 }),
+    % put_account(#account{account_number = 1, firstname = <<"Max">>, surname = <<"Meier">>, amount = 1000}),
+    % put_account(#account{account_number = 2, firstname = <<"Martin">>, surname = <<"Müller">>, amount = 1000}),
+    % put_transaction(#transaction{id = 1, timestamp = {1610,547469,326863}, from_acc_nr = 1, to_acc_nr = 2, amount = 100 }),
+    % put_transaction(#transaction{id = 2, timestamp = {1610,547469,326863}, from_acc_nr = 2, to_acc_nr = 1, amount = 20 }),
+    % put_transaction(#transaction{id = 3, timestamp = {1610,547469,326863}, from_acc_nr = 1, to_acc_nr = 2, amount = 450 }),
     ok.
 
 write(Table, Tuple) ->
