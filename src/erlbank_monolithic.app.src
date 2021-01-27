@@ -9,7 +9,7 @@
     sasl,
     lager,
     jiffy,
-     % lager_console_backend,
+    lager_logstash_backend,
     cowboy
    ]},
   {env,[]},
