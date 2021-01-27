@@ -72,7 +72,7 @@ get_all_accounts() -> read_all(account, fun deserialize_account/1).
 
 -spec get_latest_account_number() -> number().
 get_latest_account_number() ->
-     LastAccount = lists:last(get_all_accounts()),
+     LastAccount = lists:max(get_all_accounts()),
      LastAccount#account.account_number.
 
 -spec put_transaction(#transaction{}) -> ok.
