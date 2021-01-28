@@ -19,12 +19,26 @@ process_transaction(#transaction_event{transaction_id = TxId, timestamp = Timest
     database:put_account(#account{account_number=ToAcc, firstname = ToAccount#account.firstname, surname = ToAccount#account.surname, amount = ToBalance}),
     ok.
 
+wait_for_global_name(Name) ->
+    case global:whereis_name(Name) of
+        undefined ->
+            lager:info("retrying finding global name ~p", [Name]),
+            timer:sleep(1000),
+            wait_for_global_name(Name);
+        Pid ->
+            lager:info("found global name ~p", [Pid]),
+            {ok, Pid}
+    end.
+
 init(_) -> 
-    TxPid = global:whereis_name(transaction_service),
+    {ok, TxPid} = wait_for_global_name(transaction_service),
+    lager:info("sending message to transactions service at ~p", [TxPid]),
     gen_server:cast(TxPid, #transaction_event_subscription{from_id = 0, subscriber_pid = self()}),
     {ok, state}. 
 
-handle_cast(Message, _) -> {noreply, process_transaction(Message)}.
+handle_cast(Message, _) -> 
+    lager:info("received message from transactions service ~p", [Message]),
+    {noreply, process_transaction(Message)}.
 
 handle_call(_, _From, _) -> 
     Reply = ok,
